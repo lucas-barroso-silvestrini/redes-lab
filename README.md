@@ -113,3 +113,8 @@ git clone <repo-do-grupo> && cd <repo> && make up E=2 && make verificar E=2
 
 Os roteiros imprimem o valor observado em cada ponto, não só passou/falhou —
 dá para corrigir lendo a saída.
+
+## Resposta Teórica — Entrega 2
+
+### Por que o MAC precisa mudar se o IP não muda?
+O endereço IP (Camada 3) identifica o host de origem e o host de destino final na comunicação fim a fim através de toda a interconexão de redes, permanecendo o mesmo durante todo o trajeto. Já o endereço MAC (Camada 2) é um endereço físico com escopo estritamente local, utilizado para entregar o quadro apenas no enlace direto (no mesmo segmento ou switch). Ao receber um pacote, o roteador desencapsula e descarta o quadro Ethernet antigo da Camada 2, toma a decisão de roteamento na Camada 3 e encapsula o pacote IP em um novo quadro Ethernet com o endereço MAC de origem da sua própria interface de saída e o MAC de destino da próxima interface no novo enlace.
