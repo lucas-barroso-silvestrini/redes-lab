@@ -125,3 +125,11 @@ Não. Do ponto de vista do cliente, em ambos os casos a réplica deixa de respon
 
 **Se não consegue, isso é um problema?**
 Para a responsabilidade do cliente, não é um problema. A função do cliente é garantir a transparência de falhas e o tempo de resposta (SLA), redirecionando a requisição para uma réplica saudável ou informando `INDISPONIVEL` em tempo hábil. O diagnóstico e tratamento da causa raiz cabem à infraestrutura do sistema distribuído e aos algoritmos de consenso, não ao cliente.
+
+## Entrega 3 — Morte vs. Partição de Rede
+
+**O cliente consegue distinguir uma réplica morta de uma réplica particionada?**
+Não. Do ponto de vista do cliente, em ambos os casos a réplica deixa de responder com sucesso no tempo limite. Na morte (`docker stop`), a conexão é recusada ativamente (`Connection refused`), enquanto na partição (`docker network disconnect`), os pacotes são descartados (`DROP`) ocorrendo timeout. Em ambas as situações, o cliente identifica a réplica como inacessível.
+
+**Se não consegue, isso é um problema?**
+Para a responsabilidade do cliente, não é um problema. A função do cliente é garantir a transparência de falhas e o tempo de resposta (SLA), redirecionando a requisição para uma réplica saudável ou informando `INDISPONIVEL` em tempo hábil. O diagnóstico e tratamento da causa raiz cabem à infraestrutura do sistema distribuído e aos algoritmos de consenso, não ao cliente.
