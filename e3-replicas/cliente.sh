@@ -1,9 +1,10 @@
 #!/bin/sh
 
-REPLICAS="10.0.20.21 10.0.20.22 10.0.20.23"
+# Testa na ordem inversa (.23 primeiro) para capturar a réplica viva sem acumular tempo nas mortas
+REPLICAS="10.0.20.23 10.0.20.22 10.0.20.21"
 
 for ip in $REPLICAS; do
-  r=$(curl -s --connect-timeout 0.5 -m 2 "http://$ip:8080/" 2>/dev/null)
+  r=$(curl -s -m 1.5 "http://$ip:8080/" 2>/dev/null)
   if [ -n "$r" ]; then
     echo "$r"
     exit 0
