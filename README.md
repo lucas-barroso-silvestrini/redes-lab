@@ -118,3 +118,10 @@ dá para corrigir lendo a saída.
 
 ### Por que o MAC precisa mudar se o IP não muda?
 O endereço IP (Camada 3) identifica o host de origem e o host de destino final na comunicação fim a fim através de toda a interconexão de redes, permanecendo o mesmo durante todo o trajeto. Já o endereço MAC (Camada 2) é um endereço físico com escopo estritamente local, utilizado para entregar o quadro apenas no enlace direto (no mesmo segmento ou switch). Ao receber um pacote, o roteador desencapsula e descarta o quadro Ethernet antigo da Camada 2, toma a decisão de roteamento na Camada 3 e encapsula o pacote IP em um novo quadro Ethernet com o endereço MAC de origem da sua própria interface de saída e o MAC de destino da próxima interface no novo enlace.
+## Entrega 3 — Morte vs. Partição de Rede
+
+**O cliente consegue distinguir uma réplica morta de uma réplica particionada?**
+Não. Do ponto de vista do cliente, em ambos os casos a réplica deixa de responder com sucesso no tempo limite. Na morte (`docker stop`), a conexão é recusada ativamente (`Connection refused`), enquanto na partição (`docker network disconnect`), os pacotes são descartados (`DROP`) ocorrendo timeout. Em ambas as situações, o cliente identifica a réplica como inacessível.
+
+**Se não consegue, isso é um problema?**
+Para a responsabilidade do cliente, não é um problema. A função do cliente é garantir a transparência de falhas e o tempo de resposta (SLA), redirecionando a requisição para uma réplica saudável ou informando `INDISPONIVEL` em tempo hábil. O diagnóstico e tratamento da causa raiz cabem à infraestrutura do sistema distribuído e aos algoritmos de consenso, não ao cliente.
