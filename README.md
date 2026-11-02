@@ -126,10 +126,17 @@ Não. Do ponto de vista do cliente, em ambos os casos a réplica deixa de respon
 **Se não consegue, isso é um problema?**
 Para a responsabilidade do cliente, não é um problema. A função do cliente é garantir a transparência de falhas e o tempo de resposta (SLA), redirecionando a requisição para uma réplica saudável ou informando `INDISPONIVEL` em tempo hábil. O diagnóstico e tratamento da causa raiz cabem à infraestrutura do sistema distribuído e aos algoritmos de consenso, não ao cliente.
 
-## Entrega 3 — Morte vs. Partição de Rede
+# Entrega 4 — A rota se refaz sozinha
 
-**O cliente consegue distinguir uma réplica morta de uma réplica particionada?**
-Não. Do ponto de vista do cliente, em ambos os casos a réplica deixa de responder com sucesso no tempo limite. Na morte (`docker stop`), a conexão é recusada ativamente (`Connection refused`), enquanto na partição (`docker network disconnect`), os pacotes são descartados (`DROP`) ocorrendo timeout. Em ambas as situações, o cliente identifica a réplica como inacessível.
+## Resultado da Medição
+- **Tempo de convergência:** 21 segundos.
 
-**Se não consegue, isso é um problema?**
-Para a responsabilidade do cliente, não é um problema. A função do cliente é garantir a transparência de falhas e o tempo de resposta (SLA), redirecionando a requisição para uma réplica saudável ou informando `INDISPONIVEL` em tempo hábil. O diagnóstico e tratamento da causa raiz cabem à infraestrutura do sistema distribuído e aos algoritmos de consenso, não ao cliente.
+## Discussão: Custo do Vetor de Distância em Redes Grandes
+
+1. **Desempenho Medido:**
+   Em uma topologia reduzida com apenas 3 roteadores, a rede levou 21 segundos para identificar a queda do link principal e convergir para a rota de reserva através do `r3`.
+
+2. **Impacto em uma Rede com 50 Roteadores:**
+   - **Lenta Convergência (*Slow Convergence*):** O protocolo RIP (Distance-Vector) opera com atualizações periódicas (usualmente a cada 30 segundos) e propagação salto a salto (*hop-by-hop*). Em uma rede com 50 roteadores, a notificação de falha precisa passar iterativamente por dezenas de nós, fazendo com que o tempo total de convergência suba para minutos.
+   - **Problema do Conde ao Infinito (*Count-to-Infinity*):** Durante a falha, roteadores podem trocar informações desatualizadas antes de perceberem a queda, criando *routing loops* temporários até atingirem o limite de 15 saltos (métrica máxima do RIP).
+   - **Escalabilidade:** A métrica fixa limitada a 15 saltos e o overhead de mensagens periódicas tornam o RIP inviável para redes corporativas de grande porte, sendo superado por protocolos *Link-State* (como OSPF) que propagam alterações de estado por *flooding* instantâneo.
